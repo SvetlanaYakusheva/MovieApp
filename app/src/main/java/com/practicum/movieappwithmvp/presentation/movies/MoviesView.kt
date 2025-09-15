@@ -1,6 +1,7 @@
 package com.practicum.movieappwithmvp.presentation.movies
 
 import com.practicum.movieappwithmvp.domain.models.Movie
+import com.practicum.movieappwithmvp.ui.movies.MoviesState
 
 interface MoviesView {
     /*Мы упомянули, что для взаимодействия между UI и будущим Presenter нужен интерфейс View
@@ -10,17 +11,8 @@ interface MoviesView {
      */
 
     // Методы, меняющие внешний вид экрана
-    // Состояние загрузки
-    fun showLoading()
 
-    // Состояние ошибки
-    fun showError(errorMessage: String)
-
-    // Состояние пустого списка
-    fun showEmpty(emptyMessage: String)
-
-    // Состояние контента
-    fun showContent(movies: List<Movie>)
+    fun render(state: MoviesState)
 
     // Методы «одноразовых событий»
     fun showToast(additionalMessage: String)
