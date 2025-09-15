@@ -21,7 +21,7 @@ class PosterActivity : Activity(), PosterView {
 
         // Мы не можем создать PosterPresenter раньше,
         // потому что нам нужен imageUrl, который
-        // станет доступен только после super.onCreate
+        // станет доступен только по   сле super.onCreate
         val imageUrl = intent.extras?.getString("poster", "") ?: ""
         posterPresenter = Creator.providePosterPresenter(this, imageUrl)
 

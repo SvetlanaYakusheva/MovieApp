@@ -9,15 +9,19 @@ interface MoviesView {
     Пока в интерфейсе нет методов, а значит, внутреннюю реализацию MoviesActivity менять не придётся.
      */
 
-    fun showPlaceholderMessage(isVisible: Boolean)
+    // Методы, меняющие внешний вид экрана
+    // Состояние загрузки
+    fun showLoading()
 
-    fun showMoviesList(isVisible: Boolean)
+    // Состояние ошибки
+    fun showError(errorMessage: String)
 
-    fun showProgressBar(isVisible: Boolean)
+    // Состояние пустого списка
+    fun showEmpty(emptyMessage: String)
 
-    fun changePlaceholderText(newPlaceholderText: String)
+    // Состояние контента
+    fun showContent(movies: List<Movie>)
 
-    fun updateMoviesList(newMoviesList: List<Movie>)
-
+    // Методы «одноразовых событий»
     fun showToast(additionalMessage: String)
 }
