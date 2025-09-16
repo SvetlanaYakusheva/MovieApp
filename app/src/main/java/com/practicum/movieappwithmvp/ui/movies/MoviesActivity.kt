@@ -25,7 +25,7 @@ import moxy.MvpActivity
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
-class MoviesActivity :   Activity(), MoviesView {
+class MoviesActivity : Activity(), MoviesView {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -44,6 +44,7 @@ class MoviesActivity :   Activity(), MoviesView {
     private val handler = Handler(Looper.getMainLooper())
 
     private var moviesSearchPresenter: MoviesSearchPresenter? = null
+
 
     private var textWatcher: TextWatcher? = null
 
@@ -100,15 +101,16 @@ class MoviesActivity :   Activity(), MoviesView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
 
-        moviesSearchPresenter = (this.applicationContext as? MoviesApplication)?.moviesSearchPresenter
+        moviesSearchPresenter = (this.application as? MoviesApplication)?.moviesSearchPresenter
 
         if (moviesSearchPresenter == null) {
             moviesSearchPresenter = Creator.provideMoviesSearchPresenter(
-                moviesView = this,
-                context = this,
+                context = this.applicationContext,
             )
-            (this.applicationContext as? MoviesApplication)?.moviesSearchPresenter = moviesSearchPresenter
+            (this.application as? MoviesApplication)?.moviesSearchPresenter = moviesSearchPresenter
         }
+
+        //moviesSearchPresenter?.attachView(this)
 
         // Кусочек кода, который был в Presenter
         placeholderMessage = findViewById(R.id.placeholderMessage)
@@ -143,15 +145,47 @@ class MoviesActivity :   Activity(), MoviesView {
         //moviesSearchPresenter.onCreate()
     }
 
+    override fun onStart() {
+        super.onStart()
+        moviesSearchPresenter?.attachView(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        moviesSearchPresenter?.attachView(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        moviesSearchPresenter?.detachView()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        moviesSearchPresenter?.detachView()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        moviesSearchPresenter?.detachView()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+
         /*
        Чтобы минимизировать риск аварийного завершения работы приложения, рекомендуется:
        -использовать параметр s: CharSequence? для получения текста внутри TextWatcher;
        -отписывать TextWatcher от EditText в методе onDestroy у Activity.
        */
         textWatcher?.let { queryInput.removeTextChangedListener(it) }
+        moviesSearchPresenter?.detachView()
         moviesSearchPresenter?.onDestroy()
+
+        if (isFinishing()) {
+            // Очищаем ссылку на Presenter в Application
+            (this.application as? MoviesApplication)?.moviesSearchPresenter = null
+        }
     }
 
     private fun clickDebounce() : Boolean {
