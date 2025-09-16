@@ -7,7 +7,7 @@ import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
-interface MoviesView {
+interface MoviesView : MvpView {
     /*Мы упомянули, что для взаимодействия между UI и будущим Presenter нужен интерфейс View
     Интерфейс MoviesView — прослойка между слоями UI и Presentation. Добавьте его в пакет .presentation.movies.
     Попросите MoviesActivity реализовывать интерфейс MoviesView.
@@ -15,8 +15,10 @@ interface MoviesView {
      */
 
 
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun render(state: MoviesState)
 
-
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showToast(additionalMessage: String)
+
 }
