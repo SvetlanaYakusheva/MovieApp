@@ -19,23 +19,23 @@ import com.practicum.movieappwithmvp.domain.models.Movie
 import com.practicum.movieappwithmvp.ui.movies.MoviesAdapter
 import com.practicum.movieappwithmvp.ui.movies.MoviesState
 import com.practicum.movieappwithmvp.util.Creator
+import moxy.MvpPresenter
 
 class MoviesSearchPresenter(private val context: Context,
-    ) {
+    ) : MvpPresenter<MoviesView>() {
 
-    private var view: MoviesView? = null
-    private var state: MoviesState? = null
+
     private var latestSearchText: String? = null
 
-    fun attachView(view: MoviesView) {
-        this.view = view
-        state?.let { view.render(it) }
-    }
-
-    fun detachView() {
-        this.view = null
-
-    }
+//    fun attachView(view: MoviesView) {
+//        this.view = view
+//        state?.let { view.render(it) }
+//    }
+//
+//    fun detachView() {
+//        this.view = null
+//
+//    }
 
     private val moviesInteractor = Creator.provideMoviesInteractor(context)
     private val handler = Handler(Looper.getMainLooper())
@@ -81,7 +81,7 @@ class MoviesSearchPresenter(private val context: Context,
                                         errorMessage = context.getString(R.string.something_went_wrong),
                                     )
                                 )
-                                view?.showToast(errorMessage)
+                                viewState.showToast(errorMessage)
                             }
 
                             movies.isEmpty() -> {
@@ -108,13 +108,12 @@ class MoviesSearchPresenter(private val context: Context,
     }
 
     private fun renderState(state: MoviesState) {
-        this.state = state
-        this.view?.render(state)
+        viewState.render(state)
     }
 
 
 
-    fun onDestroy() {
+    override fun onDestroy() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
