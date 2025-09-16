@@ -1,6 +1,8 @@
 package com.practicum.movieappwithmvp.presentation.poster
 
-interface PosterView {
+
+
+interface PosterView  {
 
     fun setupPosterImage(url: String)
 }

@@ -14,13 +14,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.movieappwithmvp.MoviesApplication
 import com.practicum.movieappwithmvp.R
 import com.practicum.movieappwithmvp.domain.models.Movie
+import com.practicum.movieappwithmvp.presentation.movies.MoviesSearchPresenter
 import com.practicum.movieappwithmvp.presentation.movies.MoviesView
 import com.practicum.movieappwithmvp.ui.poster.PosterActivity
 import com.practicum.movieappwithmvp.util.Creator
+import moxy.MvpActivity
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 
-class MoviesActivity :  Activity(), MoviesView {
+class MoviesActivity :   Activity(), MoviesView {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -38,11 +43,8 @@ class MoviesActivity :  Activity(), MoviesView {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private val moviesSearchPresenter = Creator.provideMoviesSearchPresenter(
-        moviesView = this,
-        context = this,
-        //adapter = adapter,
-    )
+    private var moviesSearchPresenter: MoviesSearchPresenter? = null
+
     private var textWatcher: TextWatcher? = null
 
     private lateinit var queryInput: EditText
@@ -97,6 +99,17 @@ class MoviesActivity :  Activity(), MoviesView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
+
+        moviesSearchPresenter = (this.applicationContext as? MoviesApplication)?.moviesSearchPresenter
+
+        if (moviesSearchPresenter == null) {
+            moviesSearchPresenter = Creator.provideMoviesSearchPresenter(
+                moviesView = this,
+                context = this,
+            )
+            (this.applicationContext as? MoviesApplication)?.moviesSearchPresenter = moviesSearchPresenter
+        }
+
         // Кусочек кода, который был в Presenter
         placeholderMessage = findViewById(R.id.placeholderMessage)
         queryInput = findViewById(R.id.queryInput)
@@ -113,7 +126,7 @@ class MoviesActivity :  Activity(), MoviesView {
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                    moviesSearchPresenter.searchDebounce(
+                    moviesSearchPresenter?.searchDebounce(
                         changedText = s?.toString() ?: "")
                 }
 
@@ -138,7 +151,7 @@ class MoviesActivity :  Activity(), MoviesView {
        -отписывать TextWatcher от EditText в методе onDestroy у Activity.
        */
         textWatcher?.let { queryInput.removeTextChangedListener(it) }
-        moviesSearchPresenter.onDestroy()
+        moviesSearchPresenter?.onDestroy()
     }
 
     private fun clickDebounce() : Boolean {
