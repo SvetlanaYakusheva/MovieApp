@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.movieappwithmvp.R
+import com.practicum.movieappwithmvp.databinding.ActivityMoviesBinding
 import com.practicum.movieappwithmvp.domain.models.Movie
 import com.practicum.movieappwithmvp.presentation.movies.MoviesViewModel
 import com.practicum.movieappwithmvp.ui.poster.PosterActivity
@@ -29,6 +30,8 @@ class MoviesActivity : AppCompatActivity() {
 
     private var viewModel: MoviesViewModel? = null
 
+    private lateinit var binding: ActivityMoviesBinding
+
     private val adapter = MoviesAdapter {
         if (clickDebounce()) {
             val intent = Intent(this, PosterActivity::class.java)
@@ -37,11 +40,6 @@ class MoviesActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var queryInput: EditText
-    private lateinit var placeholderMessage: TextView
-    private lateinit var movies: RecyclerView
-    private lateinit var progressBar: ProgressBar
-
     private var textWatcher: TextWatcher? = null
 
     private var isClickAllowed = true
@@ -49,15 +47,13 @@ class MoviesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_movies)
+        binding = ActivityMoviesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        placeholderMessage = findViewById(R.id.placeholderMessage)
-        queryInput = findViewById(R.id.queryInput)
-        movies = findViewById(R.id.movies)
-        progressBar = findViewById(R.id.progressBar)
 
-        movies.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        movies.adapter = adapter
+
+        binding.movies.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.movies.adapter = adapter
 
         viewModel = ViewModelProvider(this, MoviesViewModel.getFactory())
             .get(MoviesViewModel::class.java)
@@ -79,12 +75,12 @@ class MoviesActivity : AppCompatActivity() {
                 )
             }
         }
-        textWatcher?.let { queryInput.addTextChangedListener(it) }
+        textWatcher?.let { binding.queryInput.addTextChangedListener(it) }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        textWatcher?.let { queryInput.removeTextChangedListener(it) }
+        textWatcher?.let { binding.queryInput.removeTextChangedListener(it) }
     }
 
     private fun clickDebounce() : Boolean {
@@ -97,15 +93,17 @@ class MoviesActivity : AppCompatActivity() {
     }
 
     fun showLoading() {
-        movies.visibility = View.GONE
-        placeholderMessage.visibility = View.GONE
-        progressBar.visibility = View.VISIBLE
+        binding.movies.visibility = View.GONE
+        binding.placeholderMessage.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     fun showContent(moviesList: List<Movie>) {
-        movies.visibility = View.VISIBLE
-        placeholderMessage.visibility = View.GONE
-        progressBar.visibility = View.GONE
+        binding.apply {
+            movies.visibility = View.VISIBLE
+            placeholderMessage.visibility = View.GONE
+            progressBar.visibility = View.GONE
+        }
 
         adapter.movies.clear()
         adapter.movies.addAll(moviesList)
@@ -113,11 +111,12 @@ class MoviesActivity : AppCompatActivity() {
     }
 
     fun showError(errorMessage: String) {
-        movies.visibility = View.GONE
-        placeholderMessage.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-
-        placeholderMessage.text = errorMessage
+        binding.apply {
+            movies.visibility = View.GONE
+            placeholderMessage.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
+            placeholderMessage.text = errorMessage
+        }
     }
 
     fun showEmpty(emptyMessage: String) {
