@@ -8,27 +8,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.movieappwithmvp.R
+import com.practicum.movieappwithmvp.databinding.IMovieBinding
 import com.practicum.movieappwithmvp.domain.models.Movie
 
-class MovieViewHolder (parent: ViewGroup) :
-    RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.i_movie, parent, false)) {
+class MovieViewHolder (private val binding: IMovieBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
-    var title: TextView = itemView.findViewById(R.id.title)
-    var description: TextView = itemView.findViewById(R.id.description)
-    var cover: ImageView = itemView.findViewById(R.id.cover)
 
     fun bind(movie: Movie) {
-        title.text = "${movie.title}"
-        description.text = "${movie.description}"
+        binding.title.text = "${movie.title}"
+        binding.description.text = "${movie.description}"
 
-        Glide.with(itemView.context)
+        Glide.with(binding.root)
             .load(movie.image)
             .centerCrop()
             .transform(RoundedCorners(12))
             .placeholder(R.drawable.ic_launcher_foreground)
-            .into(cover)
+            .into(binding.cover)
 
+    }
+
+    companion object {
+        fun from(parent: ViewGroup): MovieViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            val binding = IMovieBinding.inflate(inflater, parent, false)
+            return MovieViewHolder(binding)
+        }
     }
 }
