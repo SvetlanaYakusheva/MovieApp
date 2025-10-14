@@ -16,7 +16,8 @@ import com.practicum.movieappwithmvp.R
 import com.practicum.movieappwithmvp.domain.api.MoviesInteractor
 import com.practicum.movieappwithmvp.domain.models.Movie
 import com.practicum.movieappwithmvp.ui.movies.MoviesState
-import com.practicum.movieappwithmvp.util.Creator
+
+import org.koin.java.KoinJavaComponent.getKoin
 
 class MoviesViewModel(private val context: Context): ViewModel() {
 
@@ -24,15 +25,16 @@ class MoviesViewModel(private val context: Context): ViewModel() {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as MoviesApplication)
-                MoviesViewModel(app)
-            }
-        }
+//        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val app = (this[APPLICATION_KEY] as MoviesApplication)
+//                MoviesViewModel(app)
+//            }
+//        }
     }
 
-    private val moviesInteractor = Creator.provideMoviesInteractor(context)
+    //private val moviesInteractor = Creator.provideMoviesInteractor(context)
+    private val moviesInteractor: MoviesInteractor = getKoin().get()
 
     private val stateLiveData = MutableLiveData<MoviesState>()
     fun observeState(): LiveData<MoviesState> = stateLiveData
