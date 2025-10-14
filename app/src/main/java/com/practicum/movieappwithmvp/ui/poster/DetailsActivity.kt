@@ -8,6 +8,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.movieappwithmvp.R
 import com.practicum.movieappwithmvp.databinding.ActivityDetailsBinding
 import com.practicum.movieappwithmvp.presentation.poster.DetailsViewModel
+import com.practicum.movieappwithmvp.presentation.poster.PosterViewModel
 
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -16,7 +17,7 @@ import org.koin.core.parameter.parametersOf
 class DetailsActivity : AppCompatActivity() {
 
     private lateinit var tabMediator: TabLayoutMediator
-    private lateinit var poster: ImageView
+
     private lateinit var binding: ActivityDetailsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,19 +26,14 @@ class DetailsActivity : AppCompatActivity() {
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //poster = findViewById(R.id.poster)
+        val poster = intent.getStringExtra("poster") ?: ""
+        val movieId = intent.getStringExtra("id") ?: ""
 
-       //val imageUrl = intent.extras?.getString("poster", "") ?: ""
-
-//        val viewModel: DetailsViewModel by viewModel {
-//            parametersOf(imageUrl)
-//        }
-
-//        viewModel.observeUrl().observe(this) {
-//            setupPosterImage(it)
-//        }
-
-        binding.viewPager.adapter = DetailsAdapter(supportFragmentManager, lifecycle)
+        binding.viewPager.adapter = DetailsAdapter(
+                supportFragmentManager,
+                lifecycle,
+                poster,
+                movieId)
 
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when(position) {
@@ -48,11 +44,7 @@ class DetailsActivity : AppCompatActivity() {
         tabMediator.attach()
     }
 
-    private fun setupPosterImage(url: String) {
-        Glide.with(applicationContext)
-            .load(url)
-            .into(poster)
-    }
+
 
     override fun onDestroy() {
         super.onDestroy()
