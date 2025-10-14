@@ -1,6 +1,5 @@
 package com.practicum.movieappwithmvp.ui.movies
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -8,33 +7,29 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.practicum.movieappwithmvp.R
 import com.practicum.movieappwithmvp.databinding.ActivityMoviesBinding
 import com.practicum.movieappwithmvp.domain.models.Movie
 import com.practicum.movieappwithmvp.presentation.movies.MoviesViewModel
-import com.practicum.movieappwithmvp.ui.poster.PosterActivity
+import com.practicum.movieappwithmvp.ui.poster.DetailsActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesActivity : AppCompatActivity() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
+    private val viewModel by viewModel<MoviesViewModel>()
 
-    private var viewModel: MoviesViewModel? = null
+    //private var viewModel: MoviesViewModel? = null
 
     private lateinit var binding: ActivityMoviesBinding
 
     private val adapter = MoviesAdapter {
         if (clickDebounce()) {
-            val intent = Intent(this, PosterActivity::class.java)
+            val intent = Intent(this, DetailsActivity::class.java)
             intent.putExtra("poster", it.image)
             startActivity(intent)
         }
@@ -55,14 +50,14 @@ class MoviesActivity : AppCompatActivity() {
         binding.movies.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.movies.adapter = adapter
 
-        viewModel = ViewModelProvider(this, MoviesViewModel.getFactory())
-            .get(MoviesViewModel::class.java)
+//        viewModel = ViewModelProvider(this, MoviesViewModel.getFactory())
+//            .get(MoviesViewModel::class.java)
 
-        viewModel?.observeState()?.observe(this) {
+        viewModel.observeState().observe(this) {
             render(it)
         }
 
-        viewModel?.observeShowToast()?.observe(this) {
+        viewModel.observeShowToast().observe(this) {
             showToast(it)
         }
 
@@ -70,7 +65,7 @@ class MoviesActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
             override fun afterTextChanged(s: Editable?) { }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel?.searchDebounce(
+                viewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
             }
@@ -92,13 +87,13 @@ class MoviesActivity : AppCompatActivity() {
         return current
     }
 
-    fun showLoading() {
+    private fun showLoading() {
         binding.movies.visibility = View.GONE
         binding.placeholderMessage.visibility = View.GONE
         binding.progressBar.visibility = View.VISIBLE
     }
 
-    fun showContent(moviesList: List<Movie>) {
+    private fun showContent(moviesList: List<Movie>) {
         binding.apply {
             movies.visibility = View.VISIBLE
             placeholderMessage.visibility = View.GONE
@@ -110,7 +105,7 @@ class MoviesActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    fun showError(errorMessage: String) {
+    private fun showError(errorMessage: String) {
         binding.apply {
             movies.visibility = View.GONE
             placeholderMessage.visibility = View.VISIBLE
@@ -119,15 +114,15 @@ class MoviesActivity : AppCompatActivity() {
         }
     }
 
-    fun showEmpty(emptyMessage: String) {
+    private fun showEmpty(emptyMessage: String) {
         showError(emptyMessage)
     }
 
-    fun showToast(message: String?) {
+    private fun showToast(message: String?) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
-    fun render(state: MoviesState) {
+    private fun render(state: MoviesState) {
         when (state) {
             is MoviesState.Loading -> showLoading()
             is MoviesState.Content -> showContent(state.movies)
