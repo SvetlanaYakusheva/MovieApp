@@ -1,15 +1,13 @@
-package com.practicum.movieappwithmvp.ui.poster
+package com.practicum.movieappwithmvp.ui.details
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
-import com.practicum.movieappwithmvp.R
-import com.practicum.movieappwithmvp.databinding.ActivityDetailsBinding
 
 
 
 class DetailsActivity : AppCompatActivity() {
-
+/*
     private lateinit var tabMediator: TabLayoutMediator
 
     private lateinit var binding: ActivityDetailsBinding
@@ -23,7 +21,7 @@ class DetailsActivity : AppCompatActivity() {
         val poster = intent.getStringExtra("poster") ?: ""
         val movieId = intent.getStringExtra("id") ?: ""
 
-        binding.viewPager.adapter = DetailsAdapter(
+        binding.viewPager.adapter = DetailsViewPagerAdapter(
                 supportFragmentManager,
                 lifecycle,
                 poster,
@@ -44,4 +42,6 @@ class DetailsActivity : AppCompatActivity() {
         super.onDestroy()
         tabMediator.detach()
     }
+
+ */
 }

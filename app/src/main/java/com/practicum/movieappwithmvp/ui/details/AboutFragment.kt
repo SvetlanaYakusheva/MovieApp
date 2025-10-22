@@ -1,15 +1,17 @@
-package com.practicum.movieappwithmvp.ui.poster
+package com.practicum.movieappwithmvp.ui.details
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.practicum.movieappwithmvp.databinding.FragmentDetailsBinding
+import androidx.fragment.app.commit
+import com.practicum.movieappwithmvp.R
+import com.practicum.movieappwithmvp.databinding.FragmentAboutBinding
 import com.practicum.movieappwithmvp.domain.models.MovieDetails
 import com.practicum.movieappwithmvp.presentation.poster.AboutViewModel
 import com.practicum.movieappwithmvp.ui.cast.MoviesCastActivity
+import com.practicum.movieappwithmvp.ui.cast.MoviesCastFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -29,11 +31,11 @@ class AboutFragment : Fragment() {
         parametersOf(requireArguments().getString(MOVIE_ID))
     }
 
-    private lateinit var binding: FragmentDetailsBinding
+    private lateinit var binding: FragmentAboutBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        binding = FragmentDetailsBinding.inflate(inflater, container, false)
+        binding = FragmentAboutBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -46,12 +48,17 @@ class AboutFragment : Fragment() {
             }
         }
         binding.showCastButton.setOnClickListener {
-            startActivity(
-                MoviesCastActivity.newInstance(
-                    context = requireContext(),
-                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+            // Осуществляем навигацию
+            parentFragment?.parentFragmentManager?.commit {
+                replace(
+                    R.id.rootFragmentContainerView,
+                    MoviesCastFragment.newInstance(
+                        movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+                    ),
+                    MoviesCastFragment.TAG
                 )
-            )
+                addToBackStack(MoviesCastFragment.TAG)
+            }
         }
     }
     private fun showErrorMessage(message: String) {

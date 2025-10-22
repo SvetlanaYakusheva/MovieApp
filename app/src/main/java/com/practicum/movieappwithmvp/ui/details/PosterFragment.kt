@@ -1,4 +1,4 @@
-package com.practicum.movieappwithmvp.ui.poster
+package com.practicum.movieappwithmvp.ui.details
 
 import android.os.Bundle
 import android.view.LayoutInflater

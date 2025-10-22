@@ -1,23 +1,9 @@
 package com.practicum.movieappwithmvp.ui.movies
 
-import android.content.Intent
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.movieappwithmvp.databinding.ActivityMoviesBinding
-import com.practicum.movieappwithmvp.domain.models.Movie
-import com.practicum.movieappwithmvp.presentation.movies.MoviesViewModel
-import com.practicum.movieappwithmvp.ui.poster.DetailsActivity
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesActivity : AppCompatActivity() {
-
+/*
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
@@ -127,8 +113,10 @@ class MoviesActivity : AppCompatActivity() {
         when (state) {
             is MoviesState.Loading -> showLoading()
             is MoviesState.Content -> showContent(state.movies)
-            is MoviesState.Error -> showError(state.errorMessage)
+            is MoviesState.Error -> showError(state.message)
             is MoviesState.Empty -> showEmpty(state.message)
         }
     }
+
+ */
 }
