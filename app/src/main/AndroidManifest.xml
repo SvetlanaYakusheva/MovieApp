@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.poster.DetailsActivity"/>
+        <activity android:name=".ui.cast.MoviesCastActivity"/>
     </application>
 
 </manifest>

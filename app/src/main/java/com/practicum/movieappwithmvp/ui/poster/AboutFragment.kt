@@ -1,5 +1,6 @@
 package com.practicum.movieappwithmvp.ui.poster
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.practicum.movieappwithmvp.databinding.FragmentDetailsBinding
 import com.practicum.movieappwithmvp.domain.models.MovieDetails
 import com.practicum.movieappwithmvp.presentation.poster.AboutViewModel
+import com.practicum.movieappwithmvp.ui.cast.MoviesCastActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -42,6 +44,14 @@ class AboutFragment : Fragment() {
                 is AboutState.Content -> showDetails(it.movie)
                 is AboutState.Error -> showErrorMessage(it.message)
             }
+        }
+        binding.showCastButton.setOnClickListener {
+            startActivity(
+                MoviesCastActivity.newInstance(
+                    context = requireContext(),
+                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+                )
+            )
         }
     }
     private fun showErrorMessage(message: String) {
