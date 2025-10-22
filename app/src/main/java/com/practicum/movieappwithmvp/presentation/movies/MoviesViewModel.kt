@@ -82,7 +82,7 @@ class MoviesViewModel(private val context: Context): ViewModel() {
                             errorMessage != null -> {
                                 renderState(
                                     MoviesState.Error(
-                                        errorMessage = context.getString(R.string.something_went_wrong),
+                                        message = context.getString(R.string.something_went_wrong),
                                     )
                                 )
                                 showToast.postValue(errorMessage)

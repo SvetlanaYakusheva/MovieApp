@@ -11,7 +11,7 @@ sealed interface MoviesState {
     ) : MoviesState
 
     data class Error(
-        val errorMessage: String
+        val message: String
     ) : MoviesState
 
     data class Empty(

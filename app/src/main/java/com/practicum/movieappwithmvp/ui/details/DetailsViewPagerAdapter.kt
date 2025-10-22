@@ -1,14 +1,14 @@
-package com.practicum.movieappwithmvp.ui.poster
+package com.practicum.movieappwithmvp.ui.details
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class DetailsAdapter (fragmentManager: FragmentManager,
-                      lifecycle: Lifecycle,
-                      private val posterUrl: String,
-                      private val movieId: String)
+class DetailsViewPagerAdapter (fragmentManager: FragmentManager,
+                               lifecycle: Lifecycle,
+                               private val posterUrl: String,
+                               private val movieId: String)
 : FragmentStateAdapter(fragmentManager, lifecycle) {
 
     override fun getItemCount(): Int {
