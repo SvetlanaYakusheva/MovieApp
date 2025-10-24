@@ -19,6 +19,7 @@ class DetailsViewPagerAdapter (fragmentManager: FragmentManager,
         return when(position) {
             0 -> PosterFragment.newInstance(posterUrl)
             else -> AboutFragment.newInstance(movieId)
+
         }
     }
 }

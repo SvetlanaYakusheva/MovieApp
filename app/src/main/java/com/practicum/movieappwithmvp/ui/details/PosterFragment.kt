@@ -21,6 +21,7 @@ class PosterFragment : Fragment() {
                 putString(POSTER_URL, posterUrl)
             }
         }
+
     }
 
     private val posterViewModel: PosterViewModel by viewModel {
@@ -48,10 +49,5 @@ class PosterFragment : Fragment() {
                 .into(binding.poster)
         }
     }
-//    private fun setupPosterImage(url: String) {
-//        Glide.with(androidContext)
-//            .load(url)
-//            .into(binding.poster)
-//    }
 
 }
