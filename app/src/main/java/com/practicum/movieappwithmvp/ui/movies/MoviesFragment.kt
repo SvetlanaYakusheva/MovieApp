@@ -13,16 +13,20 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.movieappwithmvp.R
+import com.practicum.movieappwithmvp.core.navigation.Router
 import com.practicum.movieappwithmvp.databinding.FragmentMoviesBinding
 import com.practicum.movieappwithmvp.domain.models.Movie
 import com.practicum.movieappwithmvp.presentation.movies.MoviesViewModel
 import com.practicum.movieappwithmvp.ui.details.DetailsActivity
 import com.practicum.movieappwithmvp.ui.details.DetailsFragment
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {
@@ -33,25 +37,15 @@ class MoviesFragment : Fragment() {
 
     private val viewModel by viewModel<MoviesViewModel>()
 
-    private val adapter = MoviesAdapter  { movie ->
-        if (clickDebounce()) {
-            // Навигируемся на следующий экран
-            parentFragmentManager.commit {
-                replace(
-                    // Указали, в каком контейнере работаем
-                    R.id.rootFragmentContainerView,
-                    // Создали фрагмент
-                    DetailsFragment.newInstance(
-                        movieId = movie.id,
-                        posterUrl = movie.image
-                    ),
-                    // Указали тег фрагмента
-                    DetailsFragment.TAG
-                )
+    //private val router: Router by inject()
 
-                // Добавляем фрагмент в Back Stack
-                addToBackStack(DetailsFragment.TAG)
-            }
+    private val adapter = MoviesAdapter { movie ->
+        if (clickDebounce()) {
+
+            findNavController().navigate(R.id.action_moviesFragment_to_detailsFragment,
+                DetailsFragment.createArgs(movie.id, movie.image)
+            )
+
         }
     }
 

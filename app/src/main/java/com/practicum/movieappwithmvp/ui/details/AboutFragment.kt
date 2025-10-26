@@ -4,14 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import com.practicum.movieappwithmvp.R
+import com.practicum.movieappwithmvp.core.navigation.Router
 import com.practicum.movieappwithmvp.databinding.FragmentAboutBinding
 import com.practicum.movieappwithmvp.domain.models.MovieDetails
 import com.practicum.movieappwithmvp.presentation.poster.AboutViewModel
-import com.practicum.movieappwithmvp.ui.cast.MoviesCastActivity
+
 import com.practicum.movieappwithmvp.ui.cast.MoviesCastFragment
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,6 +29,8 @@ class AboutFragment : Fragment() {
                 putString(MOVIE_ID, id)
             }
         }
+        fun createArgs(id: String): Bundle =
+            bundleOf(MOVIE_ID to id)
     }
 
     private val aboutViewModel: AboutViewModel by viewModel {
@@ -48,17 +54,8 @@ class AboutFragment : Fragment() {
             }
         }
         binding.showCastButton.setOnClickListener {
-            // Осуществляем навигацию
-            parentFragment?.parentFragmentManager?.commit {
-                replace(
-                    R.id.rootFragmentContainerView,
-                    MoviesCastFragment.newInstance(
-                        movieId = requireArguments().getString(MOVIE_ID).orEmpty()
-                    ),
-                    MoviesCastFragment.TAG
-                )
-                addToBackStack(MoviesCastFragment.TAG)
-            }
+            findNavController().navigate(R.id.action_detailsFragment_to_moviesCastFragment,
+                MoviesCastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty()))
         }
     }
     private fun showErrorMessage(message: String) {
