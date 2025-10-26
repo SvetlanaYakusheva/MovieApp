@@ -46,4 +46,5 @@
         android:name="com.practicum.movieappwithmvp.ui.names.NamesFragment"
         android:label="fragment_names"
         tools:layout="@layout/fragment_names" />
+
 </navigation>
