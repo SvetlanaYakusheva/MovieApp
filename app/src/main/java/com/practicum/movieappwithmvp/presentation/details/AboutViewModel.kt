@@ -1,4 +1,4 @@
-package com.practicum.movieappwithmvp.presentation.poster
+package com.practicum.movieappwithmvp.presentation.details
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

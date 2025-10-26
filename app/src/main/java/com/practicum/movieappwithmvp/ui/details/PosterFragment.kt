@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.practicum.movieappwithmvp.databinding.FragmentPosterBinding
-import com.practicum.movieappwithmvp.presentation.poster.PosterViewModel
+import com.practicum.movieappwithmvp.presentation.details.PosterViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

@@ -2,8 +2,9 @@ package com.practicum.movieappwithmvp.di
 
 import com.practicum.movieappwithmvp.presentation.movies.MoviesViewModel
 import com.practicum.movieappwithmvp.presentation.cast.MoviesCastViewModel
-import com.practicum.movieappwithmvp.presentation.poster.AboutViewModel
-import com.practicum.movieappwithmvp.presentation.poster.PosterViewModel
+import com.practicum.movieappwithmvp.presentation.details.AboutViewModel
+import com.practicum.movieappwithmvp.presentation.details.PosterViewModel
+import com.practicum.movieappwithmvp.presentation.names.NamesViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -25,4 +26,7 @@ val viewModelModule = module {
         MoviesCastViewModel(movieId, get())
     }
 
+    viewModel {
+        NamesViewModel(get(), get())
+    }
 }
