@@ -6,16 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.navigation.fragment.findNavController
 import com.practicum.movieappwithmvp.R
-import com.practicum.movieappwithmvp.core.navigation.Router
 import com.practicum.movieappwithmvp.databinding.FragmentAboutBinding
 import com.practicum.movieappwithmvp.domain.models.MovieDetails
-import com.practicum.movieappwithmvp.presentation.poster.AboutViewModel
+import com.practicum.movieappwithmvp.presentation.details.AboutViewModel
 
 import com.practicum.movieappwithmvp.ui.cast.MoviesCastFragment
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

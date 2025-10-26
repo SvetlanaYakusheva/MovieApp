@@ -36,4 +36,15 @@
         android:name="com.practicum.movieappwithmvp.ui.cast.MoviesCastFragment"
         android:label="MoviesCastFragment"
         tools:layout="@layout/fragment_movies_cast"/>
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.practicum.movieappwithmvp.ui.info.InfoFragment"
+        android:label="fragment_info"
+        tools:layout="@layout/fragment_info" />
+    <fragment
+        android:id="@+id/namesFragment"
+        android:name="com.practicum.movieappwithmvp.ui.names.NamesFragment"
+        android:label="fragment_names"
+        tools:layout="@layout/fragment_names" />
+
 </navigation>
