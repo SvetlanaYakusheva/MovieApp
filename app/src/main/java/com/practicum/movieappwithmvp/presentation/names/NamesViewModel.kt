@@ -7,11 +7,17 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.movieappwithmvp.R
 import com.practicum.movieappwithmvp.domain.api.NamesInteractor
 import com.practicum.movieappwithmvp.domain.models.Person
 import com.practicum.movieappwithmvp.presentation.movies.SingleLiveEvent
 import com.practicum.movieappwithmvp.ui.names.NamesState
+
+
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NamesViewModel(private val context: Context,
                      private val namesInteractor: NamesInteractor): ViewModel() {
@@ -34,22 +40,38 @@ class NamesViewModel(private val context: Context,
 
         private val handler = Handler(Looper.getMainLooper())
 
+//        fun searchDebounce(changedText: String) {
+//            if (latestSearchText == changedText) {
+//                return
+//            }
+//
+//            this.latestSearchText = changedText
+//            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+//
+//            val searchRunnable = Runnable { searchRequest(changedText) }
+//
+//            val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
+//            handler.postAtTime(
+//                searchRunnable,
+//                SEARCH_REQUEST_TOKEN,
+//                postTime,
+//            )
+//        }
+
+        private var searchJob: Job? = null
+
         fun searchDebounce(changedText: String) {
             if (latestSearchText == changedText) {
                 return
             }
 
-            this.latestSearchText = changedText
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+            latestSearchText = changedText
 
-            val searchRunnable = Runnable { searchRequest(changedText) }
-
-            val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-            handler.postAtTime(
-                searchRunnable,
-                SEARCH_REQUEST_TOKEN,
-                postTime,
-            )
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                searchRequest(changedText)
+            }
         }
 
         private fun searchRequest(newSearchText: String) {
@@ -103,8 +125,8 @@ class NamesViewModel(private val context: Context,
             stateLiveData.postValue(state)
         }
 
-        override fun onCleared() {
-            super.onCleared()
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        }
+//        override fun onCleared() {
+//            super.onCleared()
+//            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+//        }
     }
