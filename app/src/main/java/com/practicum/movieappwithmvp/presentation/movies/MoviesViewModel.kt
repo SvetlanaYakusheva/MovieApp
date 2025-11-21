@@ -16,8 +16,11 @@ import com.practicum.movieappwithmvp.MoviesApplication
 import com.practicum.movieappwithmvp.R
 import com.practicum.movieappwithmvp.domain.api.MoviesInteractor
 import com.practicum.movieappwithmvp.domain.models.Movie
+import com.practicum.movieappwithmvp.domain.models.Person
 import com.practicum.movieappwithmvp.ui.movies.MoviesState
+import com.practicum.movieappwithmvp.ui.names.NamesState
 import com.practicum.movieappwithmvp.util.debounce
+import kotlinx.coroutines.launch
 
 import org.koin.java.KoinJavaComponent.getKoin
 
@@ -47,67 +50,102 @@ class MoviesViewModel(private val context: Context): ViewModel() {
     fun searchDebounce(changedText: String) {
         if (latestSearchText != changedText) {
             this.latestSearchText = changedText
-//        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-//
-//        val searchRunnable = Runnable { searchRequest(changedText) }
-//
-//        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-//        handler.postAtTime(
-//            searchRunnable,
-//            SEARCH_REQUEST_TOKEN,
-//            postTime,
-//        )
+
             movieSearchDebounce(changedText)
         }
     }
-
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            renderState(
-                MoviesState.Loading
-            )
 
-            moviesInteractor.searchMovies(newSearchText, object : MoviesInteractor.MoviesConsumer {
-                override fun consume(foundMovies: List<Movie>?, errorMessage: String?) {
-                    handler.post {
-                        val movies = mutableListOf<Movie>()
-                        if (foundMovies != null) {
-                            movies.addAll(foundMovies)
-                        }
+            renderState(MoviesState.Loading)
 
-                        when {
-                            errorMessage != null -> {
-                                renderState(
-                                    MoviesState.Error(
-                                        message = context.getString(R.string.something_went_wrong),
-                                    )
-                                )
-                                showToast.postValue(errorMessage)
-                            }
-
-                            movies.isEmpty() -> {
-                                renderState(
-                                    MoviesState.Empty(
-                                        message = context.getString(R.string.nothing_found),
-                                    )
-                                )
-                            }
-
-                            else -> {
-                                renderState(
-                                    MoviesState.Content(
-                                        movies = movies,
-                                    )
-                                )
-                            }
-                        }
-
+            viewModelScope.launch {
+                moviesInteractor
+                    .searchMovies(newSearchText)
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
                     }
-                }
-            })
+            }
         }
+
     }
 
+//    private fun searchRequest(newSearchText: String) {
+//        if (newSearchText.isNotEmpty()) {
+//            renderState(
+//                MoviesState.Loading
+//            )
+//
+//
+//            moviesInteractor.searchMovies(newSearchText, object : MoviesInteractor.MoviesConsumer {
+//                override fun consume(foundMovies: List<Movie>?, errorMessage: String?) {
+//                    handler.post {
+//                        val movies = mutableListOf<Movie>()
+//                        if (foundMovies != null) {
+//                            movies.addAll(foundMovies)
+//                        }
+//
+//                        when {
+//                            errorMessage != null -> {
+//                                renderState(
+//                                    MoviesState.Error(
+//                                        message = context.getString(R.string.something_went_wrong),
+//                                    )
+//                                )
+//                                showToast.postValue(errorMessage)
+//                            }
+//
+//                            movies.isEmpty() -> {
+//                                renderState(
+//                                    MoviesState.Empty(
+//                                        message = context.getString(R.string.nothing_found),
+//                                    )
+//                                )
+//                            }
+//
+//                            else -> {
+//                                renderState(
+//                                    MoviesState.Content(
+//                                        movies = movies,
+//                                    )
+//                                )
+//                            }
+//                        }
+//
+//                    }
+//                }
+//            })
+//        }
+//    }
+
+    private fun processResult(foundMovies: List<Movie>?, errorMessage: String?) {
+        val movies = mutableListOf<Movie>()
+        if (foundMovies != null) {
+            movies.addAll(foundMovies)
+        }
+
+        when {
+            errorMessage != null -> {
+                renderState(
+                    MoviesState.Error(
+                        message = context.getString(
+                            R.string.something_went_wrong
+                        )
+                    )
+                )
+                showToast.postValue(errorMessage)
+            }
+
+            movies.isEmpty() -> {
+                renderState(MoviesState.Empty(message = context.getString(R.string.nothing_found)))
+            }
+
+            else -> {
+
+                renderState(MoviesState.Content(movies =  movies))
+            }
+        }
+    }
     private fun renderState(state: MoviesState) {
         stateLiveData.postValue(state)
     }

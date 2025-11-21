@@ -13,50 +13,41 @@ import com.practicum.movieappwithmvp.domain.models.Movie
 import com.practicum.movieappwithmvp.domain.models.MovieDetails
 import com.practicum.movieappwithmvp.domain.models.MovieCast
 import com.practicum.movieappwithmvp.domain.models.MovieCastPerson
+import com.practicum.movieappwithmvp.domain.models.Person
 import com.practicum.movieappwithmvp.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class MoviesRepositoryImpl(private val networkClient: NetworkClient,
                             // Добавили конвертер
                            private val movieCastConverter: MovieCastConverter) : MoviesRepository {
 
-    override fun searchMovies(expression: String): Resource<List<Movie>> {
-        val response = networkClient.doRequest(MoviesSearchRequest(expression))
-        /*
-        Если запрос прошёл успешно (resultCode имеет значение 200), используя метод map{},
-        преобразуем список фильмов MovieDto в список элементов типа Movie.
-        При необходимости можно передать только нужные поля или произвести
-        какие-то промежуточные преобразования данных.
-        В этом примере мы просто передаём данные как есть.
-         */
-        return when (response.resultCode) {
+    //override fun searchMovies(expression: String): Resource<List<Movie>> {
+ override  fun searchMovies(expression: String): Flow<Resource<List<Movie>>> = flow {
+        val response = networkClient.doRequestSuspend(MoviesSearchRequest(expression))
+
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("Проверьте подключение к интернету")
+                emit(Resource.Error("Проверьте подключение к интернету"))
             }
             200 -> {
-                Resource.Success((response as MoviesSearchResponse).results.map {
-                    Movie(it.id, it.resultType, it.image, it.title, it.description)})
+                emit(Resource.Success((response as MoviesSearchResponse).results.map {
+                    Movie(it.id, it.resultType, it.image, it.title, it.description)}))
             }
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }
 
-    override fun getMovieDetails(movieId: String): Resource<MovieDetails> {
-        val response = networkClient.doRequest(MovieDetailsRequest(movieId))
-        /*
-        Если запрос прошёл успешно (resultCode имеет значение 200), используя метод map{},
-        преобразуем список фильмов MovieDto в список элементов типа Movie.
-        При необходимости можно передать только нужные поля или произвести
-        какие-то промежуточные преобразования данных.
-        В этом примере мы просто передаём данные как есть.
-         */
-        return when (response.resultCode) {
+    override fun getMovieDetails(movieId: String): Flow<Resource<MovieDetails>> = flow {
+        val response = networkClient.doRequestSuspend(MovieDetailsRequest(movieId))
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("Проверьте подключение к интернету")
+                emit(Resource.Error("Проверьте подключение к интернету"))
             }
             200 -> {
-                with(response as MovieDetailsResponse) {
+                emit(with(response as MovieDetailsResponse) {
                     Resource.Success(
                         MovieDetails(
                             id = id,
@@ -71,30 +62,30 @@ class MoviesRepositoryImpl(private val networkClient: NetworkClient,
                             plot = plot,
                         )
                     )
-                }
+                })
             }
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }
 
-    override fun getMovieCast(movieId: String): Resource<MovieCast> {
+    override fun getMovieCast(movieId: String): Flow<Resource<MovieCast>> = flow {
         // Поменяли объект dto на нужный Request-объект
-        val response = networkClient.doRequest(MovieCastRequest(movieId))
-        return when (response.resultCode) {
+        val response = networkClient.doRequestSuspend(MovieCastRequest(movieId))
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("Проверьте подключение к интернету")
+                emit(Resource.Error("Проверьте подключение к интернету"))
             }
             200 -> {
                 // используем конвертер вместо
                 // прямой конвертации
-                Resource.Success(
+                emit(Resource.Success(
                     data = movieCastConverter.convert(response as MovieCastResponse)
-                )
+                ))
             }
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }

@@ -16,47 +16,57 @@ import kotlinx.coroutines.withContext
 class RetrofitNetworkClient( private val imdbService: IMDbApiService,
                              private val context: Context) : NetworkClient {
 
-   override fun doRequest(dto: Any): Response {
-
-
-      if (isConnected() == false) {
-          return Response().apply { resultCode = -1 }
-      }
-      if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest)
-          && (dto !is MovieCastRequest) && (dto !is NamesSearchRequest)) {
-          return Response().apply { resultCode = 400 }
-      }
-
-
-      val response = if (dto is MoviesSearchRequest) {
-          imdbService.searchMovies(dto.expression).execute()
-      } else if (dto is MovieDetailsRequest) {
-          imdbService.getMovieDetails(dto.movieId).execute()
-      } else {
-          imdbService.getFullCast((dto as MovieCastRequest).movieId).execute()
-//      } else { asis MovieCastRequest
-//         // imdbService.searchNames((dto as NamesSearchRequest).expression).execute()
+//   override fun doRequest(dto: Any): Response {
 //
-      }
-      val body = response.body()
-      return if (body != null) {
-          body.apply { resultCode = response.code() }
-      } else {
-          Response().apply { resultCode = response.code() }
-      }
-  }
+//
+//      if (isConnected() == false) {
+//          return Response().apply { resultCode = -1 }
+//      }
+//      if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest)
+//          && (dto !is MovieCastRequest) && (dto !is NamesSearchRequest)) {
+//          return Response().apply { resultCode = 400 }
+//      }
+//
+//
+//      val response =  // if (dto is MoviesSearchRequest) {
+////          imdbService.searchMovies(dto.expression).execute()
+////      } else
+////          if (dto is MovieDetailsRequest) {
+////          imdbService.getMovieDetails(dto.movieId).execute()
+////      } else {
+//         // imdbService.getFullCast((dto as MovieCastRequest).movieId).execute()
+////      } else { asis MovieCastRequest
+////         // imdbService.searchNames((dto as NamesSearchRequest).expression).execute()
+////
+//      //}
+//      val body = response.body()
+//      return if (body != null) {
+//          body.apply { resultCode = response.code() }
+//      } else {
+//          Response().apply { resultCode = response.code() }
+//      }
+//  }
     override suspend fun doRequestSuspend(dto: Any): Response {
         if (isConnected() == false) {
             return Response().apply { resultCode = -1 }
         }
 
-        if (dto !is NamesSearchRequest) {
+        if ((dto !is NamesSearchRequest) && (dto !is MoviesSearchRequest)
+            && (dto !is MovieCastRequest) && (dto !is MovieDetailsRequest)) {
             return Response().apply { resultCode = 400 }
         }
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = imdbService.searchNames(dto.expression)
+                val response = if (dto is MoviesSearchRequest) {
+                    imdbService.searchMovies(dto.expression)
+                } else if (dto is MovieDetailsRequest) {
+                    imdbService.getMovieDetails(dto.movieId)
+                } else if (dto is MovieCastRequest) {
+                    imdbService.getFullCast(dto.movieId)
+                } else {
+                    imdbService.searchNames((dto as NamesSearchRequest).expression)
+                }
                 response.apply { resultCode = 200 }
             } catch (e: Throwable) {
                 Response().apply { resultCode = 500 }

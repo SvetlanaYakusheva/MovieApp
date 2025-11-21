@@ -3,9 +3,12 @@ package com.practicum.movieappwithmvp.presentation.cast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.movieappwithmvp.domain.api.MoviesInteractor
 import com.practicum.movieappwithmvp.domain.models.MovieCast
 import com.practicum.movieappwithmvp.ui.cast.MoviesCastState
+import com.practicum.movieappwithmvp.ui.details.AboutState
+import kotlinx.coroutines.launch
 
 class MoviesCastViewModel(
     private val movieId: String,
@@ -21,20 +24,30 @@ class MoviesCastViewModel(
         // При старте экрана покажем ProgressBar
         stateLiveData.postValue(MoviesCastState.Loading)
 
-        // Выполняем сетевой запрос
-        moviesInteractor.getMovieCast(movieId, object : MoviesInteractor.MovieCastConsumer {
+//        // Выполняем сетевой запрос
+//        moviesInteractor.getMovieCast(movieId, object : MoviesInteractor.MovieCastConsumer {
+//
+//            // Обрабатываем результат этого запроса
+//            override fun consume(movieCast: MovieCast?, errorMessage: String?) {
+//                if (movieCast != null) {
+//                    // добавляем конвертацию в UiState
+//                    stateLiveData.postValue(castToUiStateContent(movieCast))
+//                } else {
+//                    stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
+//                }
+//            }
+ //       })
 
-            // Обрабатываем результат этого запроса
-            override fun consume(movieCast: MovieCast?, errorMessage: String?) {
-                if (movieCast != null) {
-                    // добавляем конвертацию в UiState
-                    stateLiveData.postValue(castToUiStateContent(movieCast))
-                } else {
-                    stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
+        viewModelScope.launch {
+            moviesInteractor.getMovieCast(movieId)
+                .collect { pair ->
+                    if (pair.first != null) {
+                        stateLiveData.postValue(castToUiStateContent(pair.first!!))
+                    } else {
+                        stateLiveData.postValue(MoviesCastState.Error(pair.second ?: "Unknown error"))
+                    }
                 }
-            }
-
-        })
+        }
     }
     private fun castToUiStateContent(cast: MovieCast): MoviesCastState {
         // Строим список элементов RecyclerView
